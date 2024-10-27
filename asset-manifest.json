@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/CurriculoAutomatico/static/css/main.7db52021.css",
+    "main.js": "/CurriculoAutomatico/static/js/main.e76e73cc.js",
+    "static/js/239.5ddfa6f3.chunk.js": "/CurriculoAutomatico/static/js/239.5ddfa6f3.chunk.js",
+    "static/js/213.b09d0931.chunk.js": "/CurriculoAutomatico/static/js/213.b09d0931.chunk.js",
+    "static/js/732.32cdd9fb.chunk.js": "/CurriculoAutomatico/static/js/732.32cdd9fb.chunk.js",
+    "static/js/453.4c1d5072.chunk.js": "/CurriculoAutomatico/static/js/453.4c1d5072.chunk.js",
+    "index.html": "/CurriculoAutomatico/index.html",
+    "main.7db52021.css.map": "/CurriculoAutomatico/static/css/main.7db52021.css.map",
+    "main.e76e73cc.js.map": "/CurriculoAutomatico/static/js/main.e76e73cc.js.map",
+    "239.5ddfa6f3.chunk.js.map": "/CurriculoAutomatico/static/js/239.5ddfa6f3.chunk.js.map",
+    "213.b09d0931.chunk.js.map": "/CurriculoAutomatico/static/js/213.b09d0931.chunk.js.map",
+    "732.32cdd9fb.chunk.js.map": "/CurriculoAutomatico/static/js/732.32cdd9fb.chunk.js.map",
+    "453.4c1d5072.chunk.js.map": "/CurriculoAutomatico/static/js/453.4c1d5072.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7db52021.css",
+    "static/js/main.e76e73cc.js"
+  ]
+}
