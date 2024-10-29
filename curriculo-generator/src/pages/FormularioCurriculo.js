@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; // Para criar tabelas organizadas no PDF
+import 'jspdf-autotable';
 
 const FormularioCurriculo = () => {
   const [formData, setFormData] = useState({
@@ -22,8 +22,9 @@ const FormularioCurriculo = () => {
   const generatePDF = () => {
     const doc = new jsPDF('portrait', 'pt', 'a4');
     const marginLeft = 40;
-    const marginTop = 40;
-    
+    let currentY = 40; // Posição Y inicial na página
+    const pageHeight = doc.internal.pageSize.height; // Altura da página
+
     // Define a cor escolhida ou preta por padrão
     const chosenColor = formData.corCurriculo || '#000000';
     const [r, g, b] = hexToRgb(chosenColor);
@@ -31,82 +32,84 @@ const FormularioCurriculo = () => {
     // Nome do Candidato em Destaque
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(26);
-    doc.setTextColor(r, g, b); // Aplicando a cor escolhida
-    doc.text(formData.nome, marginLeft, marginTop);
+    doc.setTextColor(r, g, b);
+    doc.text(formData.nome, marginLeft, currentY);
+    currentY += 30;
 
     // Linha com Telefone e Email
     doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0); // Preto para o texto
+    doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Telefone: ${formData.telefone} | Email: ${formData.email}`, marginLeft, marginTop + 20);
+    doc.text(`Telefone: ${formData.telefone} | Email: ${formData.email}`, marginLeft, currentY);
+    currentY += 20;
 
     // Linha horizontal abaixo do título
-    doc.setDrawColor(r, g, b); // Cor da linha
-    doc.line(marginLeft, marginTop + 30, 550, marginTop + 30);
+    doc.setDrawColor(r, g, b);
+    doc.line(marginLeft, currentY, 550, currentY);
+    currentY += 20;
 
     // Seção Resumo
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(r, g, b); // Cor para o título
-    doc.text('Resumo', marginLeft, marginTop + 50);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.text(formData.resumo || 'Nenhum resumo fornecido.', marginLeft, marginTop + 70, { maxWidth: 500 });
+    currentY = renderSection(doc, 'Resumo', formData.resumo, marginLeft, currentY, r, g, b, pageHeight);
 
     // Linha horizontal abaixo do resumo
     doc.setDrawColor(r, g, b);
-    doc.line(marginLeft, marginTop + 90, 550, marginTop + 90);
+    doc.line(marginLeft, currentY, 550, currentY);
+    currentY += 20;
 
     // Seção Experiência Profissional
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(r, g, b);
-    doc.text('Experiência Profissional', marginLeft, marginTop + 110);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(formData.experiencia || 'Nenhuma experiência registrada.', marginLeft, marginTop + 130, { maxWidth: 500 });
+    currentY = renderSection(doc, 'Experiência Profissional', formData.experiencia, marginLeft, currentY, r, g, b, pageHeight);
 
     // Linha horizontal abaixo da experiência
     doc.setDrawColor(r, g, b);
-    doc.line(marginLeft, marginTop + 150, 550, marginTop + 150);
+    doc.line(marginLeft, currentY, 550, currentY);
+    currentY += 20;
 
     // Seção Formação Acadêmica
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(r, g, b);
-    doc.text('Formação Acadêmica', marginLeft, marginTop + 170);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(formData.escolaridade || 'Nenhuma formação registrada.', marginLeft, marginTop + 190, { maxWidth: 500 });
+    currentY = renderSection(doc, 'Formação Acadêmica', formData.escolaridade, marginLeft, currentY, r, g, b, pageHeight);
 
     // Linha horizontal abaixo da formação
     doc.setDrawColor(r, g, b);
-    doc.line(marginLeft, marginTop + 210, 550, marginTop + 210);
+    doc.line(marginLeft, currentY, 550, currentY);
+    currentY += 20;
 
     // Seção Habilidades
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(r, g, b);
-    doc.text('Habilidades', marginLeft, marginTop + 230);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(formData.habilidades || 'Nenhuma habilidade registrada.', marginLeft, marginTop + 250, { maxWidth: 500 });
+    currentY = renderSection(doc, 'Habilidades', formData.habilidades, marginLeft, currentY, r, g, b, pageHeight);
 
     // Linha horizontal abaixo das habilidades
     doc.setDrawColor(r, g, b);
-    doc.line(marginLeft, marginTop + 270, 550, marginTop + 270);
+    doc.line(marginLeft, currentY, 550, currentY);
 
     // Salvando o PDF com nome dinâmico
     doc.save(`curriculo_${formData.nome.replace(/\s+/g, '_').toLowerCase()}.pdf`);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    generatePDF();
+  const renderSection = (doc, title, content, marginLeft, currentY, r, g, b, pageHeight) => {
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(r, g, b);
+    doc.text(title, marginLeft, currentY);
+    currentY += 20;
+    
+    // Quebra automática de texto para o conteúdo
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    
+    const splitText = doc.splitTextToSize(content || 'Nenhuma informação registrada.', 500);
+
+    // Verifica se o conteúdo cabe na página; caso contrário, cria uma nova página
+    splitText.forEach(line => {
+      if (currentY + 20 > pageHeight) {
+        doc.addPage();
+        currentY = 40; // Reinicia o Y no topo da nova página
+      }
+      doc.text(line, marginLeft, currentY);
+      currentY += 14; // Espaçamento entre linhas
+    });
+
+    currentY += 10; // Espaçamento adicional após o conteúdo da seção
+
+    return currentY;
   };
 
   // Função para converter HEX em RGB
@@ -120,7 +123,12 @@ const FormularioCurriculo = () => {
       parseInt(result[1], 16),
       parseInt(result[2], 16),
       parseInt(result[3], 16)
-    ] : [0, 0, 0]; // Se não conseguir converter, retorna preto
+    ] : [0, 0, 0];
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    generatePDF();
   };
 
   return (
@@ -142,7 +150,6 @@ const FormularioCurriculo = () => {
               required
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Digite seu nome completo como gostaria que aparecesse no currículo.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Email:</label>
@@ -154,7 +161,6 @@ const FormularioCurriculo = () => {
               required
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Digite um email válido para contato.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Telefone:</label>
@@ -166,7 +172,6 @@ const FormularioCurriculo = () => {
               required
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Informe um número de telefone para contato.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Nível de Escolaridade:</label>
@@ -188,7 +193,6 @@ const FormularioCurriculo = () => {
               <option value="Mestrado">Mestrado</option>
               <option value="Doutorado">Doutorado</option>
             </select>
-            <p className="text-sm text-gray-500 mt-1">Escolha o seu nível de escolaridade mais recente.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Experiência Profissional:</label>
@@ -198,7 +202,6 @@ const FormularioCurriculo = () => {
               onChange={handleChange}
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Descreva suas experiências profissionais mais relevantes.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Habilidades:</label>
@@ -208,7 +211,6 @@ const FormularioCurriculo = () => {
               onChange={handleChange}
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Liste suas principais habilidades e conhecimentos.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Resumo Pessoal:</label>
@@ -218,7 +220,6 @@ const FormularioCurriculo = () => {
               onChange={handleChange}
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Escreva um breve resumo sobre você, destacando suas qualificações e objetivos.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Cor do Currículo:</label>
@@ -229,7 +230,6 @@ const FormularioCurriculo = () => {
               onChange={handleChange}
               className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <p className="text-sm text-gray-500 mt-1">Escolha a cor predominante para o currículo.</p>
           </div>
           <button
             type="submit"
